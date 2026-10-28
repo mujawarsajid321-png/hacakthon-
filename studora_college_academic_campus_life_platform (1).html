@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studora - Smart Student Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- NAVIGATION BAR -->
+    <nav class="sticky top-0 z-40 w-full glass border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-extrabold bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent">Studora</span>
+                </div>
+
+                <!-- Nav Links (Desktop) -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 text-brand-600 bg-brand-50 dark:bg-slate-800 dark:text-brand-500">
+                        <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('planner')" id="nav-planner" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-calendar-check"></i><span>Study Planner</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="nav-quiz" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i><span>AI Quiz Gen</span>
+                    </button>
+                    <button onclick="switchTab('lostfound')" id="nav-lostfound" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-box-open"></i><span>Lost & Found</span>
+                    </button>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-3">
+                    <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                    </button>
+
+                    <div id="userAuthSection">
+                        <button onclick="openAuthModal()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-md shadow-brand-500/20 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span id="authBtnText">Sign In</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div class="md:hidden flex justify-around border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 py-2">
+            <button onclick="switchTab('dashboard')" class="flex flex-col items-center text-xs text-brand-600 font-medium">
+                <i class="fa-solid fa-chart-pie text-lg mb-0.5"></i>Home
+            </button>
+            <button onclick="switchTab('planner')" class="flex flex-col items-center text-xs text-slate-500 font-medium">
+                <i class="fa-solid fa-calendar-check text-lg mb-0.5"></i>Planner
+            </button>
+            <button onclick="switchTab('quiz')" class="flex flex-col items-center text-xs text-slate-500 font-medium">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-lg mb-0.5"></i>AI Quiz
+            </button>
+            <button onclick="switchTab('lostfound')" class="flex flex-col items-center text-xs text-slate-500 font-medium">
+                <i class="fa-solid fa-box-open text-lg mb-0.5"></i>Lost & Found
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= DASHBOARD TAB ================= -->
+        <div id="tab-dashboard" class="tab-content space-y-8">
+            
+            <!-- Long Hero Section -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-900 text-white shadow-2xl">
+                <div class="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80" 
+                         alt="Students studying on desk with laptop and notes" 
+                         class="w-full h-full object-cover"
+                         onerror="this.src='https://placehold.co/1600x600/1e1b4b/ffffff?text=College+Students+Studying'">
+                </div>
+                
+                <div class="relative z-10 p-8 sm:p-12 lg:p-16 max-w-3xl space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-semibold tracking-wide uppercase text-indigo-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Your Ultimate Campus Operating System</span>
+                    </div>
+                    
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        Supercharge Your Academic Journey with <span class="bg-gradient-to-r from-indigo-300 via-sky-200 to-pink-300 bg-clip-text text-transparent">Studora</span>
+                    </h1>
+                    
+                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+                        Streamline your study routines, convert lecture notes into instant AI practice quizzes, and stay connected with your campus community through real-time lost & found notifications.
+                    </p>
+
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('planner')" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-brand-500/30 transition flex items-center space-x-2">
+                            <span>Open Study Planner</span>
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </button>
+                        <button onclick="switchTab('quiz')" class="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white font-semibold px-6 py-3 rounded-xl transition flex items-center space-x-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span>Try AI Quiz Generator</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subtle Decorative Gradient Glow -->
+                <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-brand-500/30 rounded-full blur-3xl pointer-events-none"></div>
+            </div>
+
+            <!-- Quick Stats & Overview Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                <!-- Stat Card 1 -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-tasks"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase text-slate-400">Active Tasks</p>
+                        <h3 id="dash-active-tasks" class="text-2xl font-bold text-slate-800 dark:text-slate-100">0</h3>
+                    </div>
+                </div>
+                <!-- Stat Card 2 -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase text-slate-400">Completed</p>
+                        <h3 id="dash-completed-tasks" class="text-2xl font-bold text-slate-800 dark:text-slate-100">0</h3>
+                    </div>
+                </div>
+                <!-- Stat Card 3 -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase text-slate-400">Study Streak</p>
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">5 Days 🔥</h3>
+                    </div>
+                </div>
+                <!-- Stat Card 4 -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-semibold uppercase text-slate-400">Quizzes Solved</p>
+                        <h3 id="dash-quiz-count" class="text-2xl font-bold text-slate-800 dark:text-slate-100">0</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Quick Access Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Smart Planner Feature Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition group">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-slate-800 dark:text-slate-100">Smart Study Planner</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-4 leading-relaxed">
+                        Organize course modules, set high-priority exam dates, and monitor real-time task progress.
+                    </p>
+                    <button onclick="switchTab('planner')" class="text-sm font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 flex items-center space-x-1">
+                        <span>Manage Schedule</span>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- AI Notes-to-Quiz Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition group">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-slate-800 dark:text-slate-100">AI Quiz Generator</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-4 leading-relaxed">
+                        Transform raw lecture notes or textbook summaries into interactive multiple-choice tests automatically.
+                    </p>
+                    <button onclick="switchTab('quiz')" class="text-sm font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 flex items-center space-x-1">
+                        <span>Create AI Quiz</span>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Campus Lost & Found Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-md transition group">
+                    <div class="w-12 h-12 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2 text-slate-800 dark:text-slate-100">Campus Lost & Found</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-4 leading-relaxed">
+                        Lost your student ID, keys, or notebook? Report or recover missing items on campus instantly.
+                    </p>
+                    <button onclick="switchTab('lostfound')" class="text-sm font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 flex items-center space-x-1">
+                        <span>Browse Lost Items</span>
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Tasks Summary -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">Upcoming Academic Deadlines</h3>
+                    <button onclick="switchTab('planner')" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">View All</button>
+                </div>
+                <div id="dash-recent-tasks-list" class="space-y-3">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= SMART STUDY PLANNER TAB ================= -->
+        <div id="tab-planner" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Smart Study Planner</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Schedule your study sessions, set deadlines, and boost your daily productivity.</p>
+                </div>
+                <button onclick="openAddTaskModal()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm shadow-md transition flex items-center space-x-2 self-start md:self-auto">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add New Task</span>
+                </button>
+            </div>
+
+            <!-- Planner Progress Bar -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-3">
+                <div class="flex justify-between items-center text-sm font-semibold">
+                    <span class="text-slate-700 dark:text-slate-300">Overall Course Progress</span>
+                    <span id="planner-progress-text" class="text-brand-600 dark:text-brand-400">0% Completed</span>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 h-3 rounded-full overflow-hidden">
+                    <div id="planner-progress-bar" class="bg-brand-600 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto pb-1">
+                    <button onclick="filterTasks('all')" id="filter-all" class="task-filter-btn px-4 py-1.5 rounded-xl text-xs font-semibold bg-brand-600 text-white">All</button>
+                    <button onclick="filterTasks('pending')" id="filter-pending" class="task-filter-btn px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Pending</button>
+                    <button onclick="filterTasks('completed')" id="filter-completed" class="task-filter-btn px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Completed</button>
+                </div>
+                <div class="w-full sm:w-64">
+                    <input type="text" id="taskSearchInput" oninput="renderTasks()" placeholder="Search task title or subject..." class="w-full px-3.5 py-2 rounded-xl text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+            </div>
+
+            <!-- Task Grid List -->
+            <div id="planner-tasks-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Task items rendered dynamically -->
+            </div>
+        </div>
+
+
+        <!-- ================= AI NOTES-TO-QUIZ GENERATOR TAB ================= -->
+        <div id="tab-quiz" class="tab-content hidden space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">AI Notes-to-Quiz Generator</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Paste your lecture notes, summaries, or reading materials below to instantly generate a custom practice exam.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left Input Panel -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Subject / Topic</label>
+                        <input type="text" id="quizTopic" placeholder="e.g. Organic Chemistry - Reactions" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Paste Study Notes</label>
+                        <textarea id="quizNotesInput" rows="10" placeholder="Paste your study notes, key terms, lecture points here..." class="w-full px-4 py-3 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 outline-none leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400">Number of Questions:</label>
+                        <select id="quizNumQuestions" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-semibold px-3 py-1.5 focus:outline-none">
+                            <option value="3">3 Questions</option>
+                            <option value="5" selected>5 Questions</option>
+                            <option value="8">8 Questions</option>
+                        </select>
+                    </div>
+
+                    <button onclick="generateAIQuiz()" id="generateQuizBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Generate Quiz Now</span>
+                    </button>
+                </div>
+
+                <!-- Right Display / Active Quiz Panel -->
+                <div class="lg:col-span-7 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between min-h-[450px]">
+                    <div id="quiz-placeholder-state" class="my-auto text-center py-12 space-y-3">
+                        <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                            <i class="fa-solid fa-file-circle-question"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200">No Quiz Generated Yet</h3>
+                        <p class="text-sm text-slate-400 max-w-sm mx-auto">Fill in your notes on the left panel and click 'Generate Quiz Now' to create dynamic practice questions.</p>
+                    </div>
+
+                    <!-- Loader -->
+                    <div id="quiz-loading-state" class="hidden my-auto text-center py-12 space-y-4">
+                        <div class="inline-block w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">Gemini AI is analyzing your notes & generating questions...</p>
+                    </div>
+
+                    <!-- Active Interactive Quiz UI -->
+                    <div id="quiz-active-state" class="hidden space-y-6">
+                        <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-4">
+                            <div>
+                                <span id="quiz-display-topic" class="text-xs uppercase tracking-wider font-extrabold text-amber-500">Subject</span>
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100" id="quiz-progress-header">Question 1 of 5</h3>
+                            </div>
+                            <span id="quiz-timer" class="px-3 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-600 text-xs font-bold rounded-full">Practice Mode</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 id="quiz-question-text" class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 leading-snug">
+                                Question text goes here?
+                            </h4>
+
+                            <div id="quiz-options-container" class="space-y-2.5">
+                                <!-- Options dynamically rendered -->
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
+                            <button id="quiz-prev-btn" onclick="prevQuestion()" class="px-4 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">Previous</button>
+                            <button id="quiz-next-btn" onclick="nextQuestion()" class="px-5 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white transition">Next Question</button>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Score Results State -->
+                    <div id="quiz-result-state" class="hidden text-center py-8 space-y-6">
+                        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-3xl">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-slate-800 dark:text-slate-100">Quiz Completed!</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Great job reviewing your course material.</p>
+                        </div>
+                        <div class="inline-block bg-slate-100 dark:bg-slate-700 px-6 py-4 rounded-2xl">
+                            <span class="text-xs font-semibold text-slate-400 block uppercase">Final Score</span>
+                            <span id="quiz-final-score" class="text-4xl font-black text-brand-600 dark:text-brand-400">4 / 5</span>
+                        </div>
+                        <div>
+                            <button onclick="resetQuiz()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition">
+                                Try Another Notes Batch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= CAMPUS LOST & FOUND TAB ================= -->
+        <div id="tab-lostfound" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Campus Lost & Found</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Report missing property or post items you found around campus building zones.</p>
+                </div>
+                <button onclick="openReportItemModal()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm shadow-md transition flex items-center space-x-2 self-start md:self-auto">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Report Item</span>
+                </button>
+            </div>
+
+            <!-- Search & Filter Controls -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex space-x-2">
+                    <button onclick="filterLostFound('all')" id="lf-filter-all" class="lf-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 text-white">All Items</button>
+                    <button onclick="filterLostFound('lost')" id="lf-filter-lost" class="lf-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Lost</button>
+                    <button onclick="filterLostFound('found')" id="lf-filter-found" class="lf-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Found</button>
+                </div>
+                <input type="text" id="lfSearchInput" oninput="renderLostFound()" placeholder="Search by item title, campus location..." class="flex-grow px-4 py-2 rounded-xl text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none">
+            </div>
+
+            <!-- Lost & Found Cards Grid -->
+            <div id="lostfound-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically loaded cards -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 py-6 bg-white dark:bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 space-y-2">
+            <p>&copy; 2026 Studora Inc. Elevating Campus Student Productivity worldwide.</p>
+            <div class="flex justify-center space-x-4">
+                <a href="#" class="hover:underline">Privacy Policy</a>
+                <span>•</span>
+                <a href="#" class="hover:underline">Campus Guidelines</a>
+                <span>•</span>
+                <a href="#" class="hover:underline">Support</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- AUTHENTICATION / ACCOUNT MODAL -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="p-6 space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 id="authModalTitle" class="text-xl font-bold text-slate-800 dark:text-slate-100">Student Sign In</h3>
+                    <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                    <div id="nameFieldContainer" class="hidden">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Full Name</label>
+                        <input type="text" id="authName" placeholder="Alex Morgan" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">College Email Address</label>
+                        <input type="email" id="authEmail" required placeholder="student@university.edu" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Password</label>
+                        <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <button type="submit" id="authSubmitBtn" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl shadow-md transition">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <button onclick="toggleAuthMode()" id="authToggleText" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline">
+                        Don't have an account? Sign Up
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ADD TASK PLANNER MODAL -->
+    <div id="addTaskModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Create Study Task</h3>
+                    <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <form onsubmit="handleAddTask(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Task Title</label>
+                        <input type="text" id="taskTitle" required placeholder="Read Chapter 4 & Solve Exercises" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Subject / Tag</label>
+                            <input type="text" id="taskSubject" required placeholder="Physics 101" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Priority</label>
+                            <select id="taskPriority" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High Priority</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Deadline Date & Time</label>
+                        <input type="datetime-local" id="taskDeadline" required class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl shadow-md transition">
+                        Add to Planner
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- REPORT LOST & FOUND MODAL -->
+    <div id="reportItemModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="p-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100">Report Lost or Found Item</h3>
+                    <button onclick="closeReportItemModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <form onsubmit="handleReportItem(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Report Type</label>
+                            <select id="lfType" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none">
+                                <option value="lost">I Lost Something</option>
+                                <option value="found">I Found Something</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Item Title</label>
+                            <input type="text" id="lfTitle" required placeholder="Black Leather Wallet" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Campus Location</label>
+                        <input type="text" id="lfLocation" required placeholder="Main Library 2nd Floor Study Room" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Description</label>
+                        <textarea id="lfDescription" rows="3" required placeholder="Include distinguishing marks, brand name, color details..." class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Contact Email / Phone</label>
+                            <input type="text" id="lfContact" required placeholder="alex@campus.edu" class="w-full px-4 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-rose-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">Upload Photo</label>
+                            <input type="file" id="lfImageInput" accept="image/*" onchange="handleImagePreview(event)" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-600 hover:file:bg-rose-100">
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div id="lfImagePreviewContainer" class="hidden">
+                        <img id="lfImagePreview" class="w-full h-32 object-cover rounded-xl border border-slate-200 dark:border-slate-700">
+                    </div>
+
+                    <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 rounded-xl shadow-md transition">
+                        Post Announcement
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- APP LOGIC & JAVASCRIPT -->
+    <script>
+        // ================= APPLICATION STATE =================
+        let currentUser = null;
+        let isAuthSignUp = false;
+        let currentFilter = 'all';
+        let currentLFFilter = 'all';
+        let uploadedItemBase64 = '';
+
+        // Initial Sample Tasks
+        let tasks = [
+            { id: 1, title: 'Calculus II Chapter 3 Homework', subject: 'Mathematics', priority: 'High', deadline: '2026-10-30T18:00', completed: false },
+            { id: 2, title: 'Read Literature Essay Guidelines', subject: 'English', priority: 'Low', deadline: '2026-11-02T23:59', completed: true },
+            { id: 3, title: 'Prepare Computer Science Lab Slides', subject: 'CS 102', priority: 'Medium', deadline: '2026-10-29T12:00', completed: false }
+        ];
+
+        // Initial Sample Lost & Found Items
+        let lostFoundItems = [
+            {
+                id: 1,
+                type: 'lost',
+                title: 'Blue Airpods Pro Case',
+                location: 'Science Building Auditorium B',
+                description: 'Lost during 10 AM Biology lecture. Has a clear protective casing with a small scratch on top.',
+                contact: 'jordan.m@university.edu',
+                date: 'Oct 27, 2026',
+                image: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?auto=format&fit=crop&w=500&q=80'
+            },
+            {
+                id: 2,
+                type: 'found',
+                title: 'Scientific Calculator TI-84',
+                location: 'Student Union Food Court',
+                description: 'Found left behind on a corner dining table around 2 PM. Turned into the reception desk.',
+                contact: 'lostandfound@campus.edu',
+                date: 'Oct 28, 2026',
+                image: 'https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=500&q=80'
+            }
+        ];
+
+        // Active Quiz State
+        let currentQuizQuestions = [];
+        let currentQuestionIdx = 0;
+        let userQuizAnswers = {};
+
+        // ================= INITIALIZATION =================
+        window.onload = function() {
+            // Check Dark Mode
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            renderTasks();
+            renderLostFound();
+            updateDashboardStats();
+            updateUserUI();
+        };
+
+        // Dark Theme Toggle
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // ================= NAVIGATION =================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center space-x-2";
+            });
+            
+            const activeNavBtn = document.getElementById(`nav-${tabId}`);
+            if(activeNavBtn) {
+                activeNavBtn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center space-x-2 text-brand-600 bg-brand-50 dark:bg-slate-800 dark:text-brand-500";
+            }
+        }
+
+        // ================= AUTHENTICATION MODAL =================
+        function openAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+        function toggleAuthMode() {
+            isAuthSignUp = !isAuthSignUp;
+            document.getElementById('authModalTitle').innerText = isAuthSignUp ? 'Create Student Account' : 'Student Sign In';
+            document.getElementById('nameFieldContainer').classList.toggle('hidden', !isAuthSignUp);
+            document.getElementById('authSubmitBtn').innerText = isAuthSignUp ? 'Sign Up' : 'Sign In';
+            document.getElementById('authToggleText').innerText = isAuthSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up";
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const name = isAuthSignUp ? document.getElementById('authName').value : email.split('@')[0];
+
+            currentUser = {
+                name: name || 'Student',
+                email: email,
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`
+            };
+
+            updateUserUI();
+            closeAuthModal();
+        }
+
+        function updateUserUI() {
+            const container = document.getElementById('userAuthSection');
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${currentUser.avatar}" alt="Avatar" class="w-9 h-9 rounded-full bg-slate-200 border border-slate-300">
+                        <span class="text-sm font-semibold hidden sm:inline text-slate-700 dark:text-slate-200">${currentUser.name}</span>
+                        <button onclick="logout()" class="text-xs text-rose-500 font-medium hover:underline">Log Out</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-md shadow-brand-500/20 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Sign In</span>
+                    </button>
+                `;
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            updateUserUI();
+        }
+
+        // ================= SMART STUDY PLANNER =================
+        function openAddTaskModal() { document.getElementById('addTaskModal').classList.remove('hidden'); }
+        function closeAddTaskModal() { document.getElementById('addTaskModal').classList.add('hidden'); }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitle').value;
+            const subject = document.getElementById('taskSubject').value;
+            const priority = document.getElementById('taskPriority').value;
+            const deadline = document.getElementById('taskDeadline').value;
+
+            tasks.push({
+                id: Date.now(),
+                title,
+                subject,
+                priority,
+                deadline,
+                completed: false
+            });
+
+            closeAddTaskModal();
+            renderTasks();
+            updateDashboardStats();
+            // Reset form
+            e.target.reset();
+        }
+
+        function toggleTaskComplete(id) {
+            tasks = tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            renderTasks();
+            updateDashboardStats();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            renderTasks();
+            updateDashboardStats();
+        }
+
+        function filterTasks(status) {
+            currentFilter = status;
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                btn.className = "task-filter-btn px-4 py-1.5 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
+            });
+            document.getElementById(`filter-${status}`).className = "task-filter-btn px-4 py-1.5 rounded-xl text-xs font-semibold bg-brand-600 text-white";
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('planner-tasks-container');
+            const search = document.getElementById('taskSearchInput').value.toLowerCase();
+
+            let filtered = tasks.filter(t => {
+                const matchesFilter = currentFilter === 'all' || 
+                                     (currentFilter === 'completed' && t.completed) || 
+                                     (currentFilter === 'pending' && !t.completed);
+                const matchesSearch = t.title.toLowerCase().includes(search) || t.subject.toLowerCase().includes(search);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-400">
+                        <i class="fa-regular fa-folder-open text-3xl mb-2"></i>
+                        <p class="text-sm font-medium">No study tasks found matching your filter.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = filtered.map(t => `
+                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between ${t.completed ? 'opacity-75' : ''}">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-400">${t.subject}</span>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-md ${t.priority === 'High' ? 'bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'}">${t.priority} Priority</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 ${t.completed ? 'line-through text-slate-400' : ''}">${t.title}</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1.5">
+                                <i class="fa-regular fa-clock"></i>
+                                <span>Due: ${new Date(t.deadline).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60">
+                            <button onclick="toggleTaskComplete(${t.id})" class="text-xs font-semibold px-3 py-1.5 rounded-xl border ${t.completed ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300'}">
+                                ${t.completed ? '<i class="fa-solid fa-check mr-1"></i> Done' : 'Mark Done'}
+                            </button>
+                            <button onclick="deleteTask(${t.id})" class="text-xs text-rose-500 hover:text-rose-700 p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Update Progress Bar
+            const completedCount = tasks.filter(t => t.completed).length;
+            const totalCount = tasks.length;
+            const pct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+
+            document.getElementById('planner-progress-text').innerText = `${pct}% Completed (${completedCount}/${totalCount})`;
+            document.getElementById('planner-progress-bar').style.width = `${pct}%`;
+        }
+
+        function updateDashboardStats() {
+            const active = tasks.filter(t => !t.completed).length;
+            const completed = tasks.filter(t => t.completed).length;
+
+            document.getElementById('dash-active-tasks').innerText = active;
+            document.getElementById('dash-completed-tasks').innerText = completed;
+
+            // Render top 3 upcoming tasks in dashboard
+            const recentContainer = document.getElementById('dash-recent-tasks-list');
+            const upcoming = tasks.filter(t => !t.completed).slice(0, 3);
+
+            if(upcoming.length === 0) {
+                recentContainer.innerHTML = `<p class="text-xs text-slate-400 py-2">No pending tasks right now. Great job!</p>`;
+            } else {
+                recentContainer.innerHTML = upcoming.map(t => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" onclick="toggleTaskComplete(${t.id})" class="rounded text-brand-600 border-slate-300 focus:ring-brand-500 w-4 h-4">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-800 dark:text-slate-200">${t.title}</h5>
+                                <span class="text-[10px] text-slate-400">${t.subject} • ${new Date(t.deadline).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded ${t.priority === 'High' ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-600'}">${t.priority}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+        // ================= AI NOTES-TO-QUIZ GENERATOR =================
+        let solvedQuizzesCount = 0;
+
+        async function generateAIQuiz() {
+            const notes = document.getElementById('quizNotesInput').value.trim();
+            const topic = document.getElementById('quizTopic').value.trim() || 'General Study Subject';
+            const numQuestions = parseInt(document.getElementById('quizNumQuestions').value);
+
+            if (!notes) {
+                alert('Please paste some lecture notes or study material first.');
+                return;
+            }
+
+            // Update UI State
+            document.getElementById('quiz-placeholder-state').classList.add('hidden');
+            document.getElementById('quiz-active-state').classList.add('hidden');
+            document.getElementById('quiz-result-state').classList.add('hidden');
+            document.getElementById('quiz-loading-state').classList.remove('hidden');
+
+            const systemPrompt = `You are an expert university professor creating a practice quiz. 
+Create exactly ${numQuestions} multiple choice questions based strictly on the provided notes. 
+Output ONLY valid JSON matching this schema:
+[
+  {
+    "question": "Question text",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correctIndex": 0,
+    "explanation": "Brief explanation why"
+  }
+]`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: `Topic: ${topic}\nNotes:\n${notes}` }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                    const parsedQuestions = JSON.parse(result.candidates[0].content.parts[0].text);
+                    currentQuizQuestions = parsedQuestions;
+                    currentQuestionIdx = 0;
+                    userQuizAnswers = {};
+
+                    document.getElementById('quiz-display-topic').innerText = topic;
+                    document.getElementById('quiz-loading-state').classList.add('hidden');
+                    document.getElementById('quiz-active-state').classList.remove('hidden');
+                    renderQuizQuestion();
+                } else {
+                    throw new Error("Invalid structure returned");
+                }
+            } catch (err) {
+                console.error("Quiz gen error:", err);
+                document.getElementById('quiz-loading-state').classList.add('hidden');
+                document.getElementById('quiz-placeholder-state').classList.remove('hidden');
+                alert("Could not generate quiz from notes. Please try again with clearer material.");
+            }
+        }
+
+        function renderQuizQuestion() {
+            const q = currentQuizQuestions[currentQuestionIdx];
+            const total = currentQuizQuestions.length;
+
+            document.getElementById('quiz-progress-header').innerText = `Question ${currentQuestionIdx + 1} of ${total}`;
+            document.getElementById('quiz-question-text').innerText = q.question;
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            const selectedOpt = userQuizAnswers[currentQuestionIdx];
+
+            optionsContainer.innerHTML = q.options.map((opt, idx) => `
+                <button onclick="selectOption(${idx})" class="w-full text-left p-3.5 rounded-xl border text-sm font-medium transition flex items-center justify-between ${selectedOpt === idx ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold' : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'}">
+                    <span>${opt}</span>
+                    <i class="fa-regular ${selectedOpt === idx ? 'fa-circle-dot text-amber-500' : 'fa-circle text-slate-300'}"></i>
+                </button>
+            `).join('');
+
+            document.getElementById('quiz-prev-btn').disabled = currentQuestionIdx === 0;
+            document.getElementById('quiz-next-btn').innerText = currentQuestionIdx === total - 1 ? 'Finish Quiz' : 'Next Question';
+        }
+
+        function selectOption(optIndex) {
+            userQuizAnswers[currentQuestionIdx] = optIndex;
+            renderQuizQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIdx > 0) {
+                currentQuestionIdx--;
+                renderQuizQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIdx < currentQuizQuestions.length - 1) {
+                currentQuestionIdx++;
+                renderQuizQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            let score = 0;
+            currentQuizQuestions.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.correctIndex) {
+                    score++;
+                }
+            });
+
+            solvedQuizzesCount++;
+            document.getElementById('dash-quiz-count').innerText = solvedQuizzesCount;
+
+            document.getElementById('quiz-final-score').innerText = `${score} / ${currentQuizQuestions.length}`;
+            document.getElementById('quiz-active-state').classList.add('hidden');
+            document.getElementById('quiz-result-state').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-result-state').classList.add('hidden');
+            document.getElementById('quiz-placeholder-state').classList.remove('hidden');
+        }
+
+
+        // ================= CAMPUS LOST & FOUND =================
+        function openReportItemModal() { document.getElementById('reportItemModal').classList.remove('hidden'); }
+        function closeReportItemModal() { 
+            document.getElementById('reportItemModal').classList.add('hidden'); 
+            uploadedItemBase64 = '';
+            document.getElementById('lfImagePreviewContainer').classList.add('hidden');
+        }
+
+        function handleImagePreview(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedItemBase64 = evt.target.result;
+                    document.getElementById('lfImagePreview').src = uploadedItemBase64;
+                    document.getElementById('lfImagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleReportItem(e) {
+            e.preventDefault();
+            const type = document.getElementById('lfType').value;
+            const title = document.getElementById('lfTitle').value;
+            const location = document.getElementById('lfLocation').value;
+            const description = document.getElementById('lfDescription').value;
+            const contact = document.getElementById('lfContact').value;
+
+            const newItem = {
+                id: Date.now(),
+                type,
+                title,
+                location,
+                description,
+                contact,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                image: uploadedItemBase64 || 'https://placehold.co/600x400/e2e8f0/475569?text=No+Photo+Uploaded'
+            };
+
+            lostFoundItems.unshift(newItem);
+            closeReportItemModal();
+            renderLostFound();
+            e.target.reset();
+        }
+
+        function filterLostFound(type) {
+            currentLFFilter = type;
+            document.querySelectorAll('.lf-filter-btn').forEach(btn => {
+                btn.className = "lf-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
+            });
+            document.getElementById(`lf-filter-${type}`).className = "lf-filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 text-white";
+            renderLostFound();
+        }
+
+        function renderLostFound() {
+            const container = document.getElementById('lostfound-grid');
+            const search = document.getElementById('lfSearchInput').value.toLowerCase();
+
+            let filtered = lostFoundItems.filter(item => {
+                const matchesFilter = currentLFFilter === 'all' || item.type === currentLFFilter;
+                const matchesSearch = item.title.toLowerCase().includes(search) || item.location.toLowerCase().includes(search);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-3xl mb-2"></i>
+                        <p class="text-sm font-medium">No lost or found items match your criteria.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = filtered.map(item => `
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-48 bg-slate-100 dark:bg-slate-900">
+                                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover">
+                                <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-extrabold uppercase shadow-md ${item.type === 'lost' ? 'bg-rose-500 text-white' : 'bg-emerald-500 text-white'}">
+                                    ${item.type === 'lost' ? 'Lost Item' : 'Found Item'}
+                                </span>
+                            </div>
+                            <div class="p-5 space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <h4 class="font-bold text-slate-800 dark:text-slate-100 text-base">${item.title}</h4>
+                                    <span class="text-[10px] text-slate-400 font-semibold">${item.date}</span>
+                                </div>
+                                <p class="text-xs text-rose-600 dark:text-rose-400 font-medium flex items-center space-x-1">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>${item.location}</span>
+                                </p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">${item.description}</p>
+                            </div>
+                        </div>
+                        <div class="p-5 pt-0">
+                            <a href="mailto:${item.contact}" class="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+                                <i class="fa-regular fa-envelope"></i>
+                                <span>Contact Finder / Owner</span>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html>
